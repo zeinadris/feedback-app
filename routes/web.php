@@ -22,3 +22,5 @@ Route::get('/', function () {
 Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
 Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');
 Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+Route::resource('feedback', FeedbackController::class);
+

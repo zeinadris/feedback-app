@@ -47,4 +47,54 @@ class FeedbackController extends Controller
     }
 
     // ... (Tambahkan method lain seperti show, edit, update, destroy sesuai kebutuhan)
+    public function show(Feedback $feedback) 
+    {
+        return view('feedback.show', compact('feedback'));
+    }
+
+    public function edit(Feedback $feedback) 
+    {
+        return view('feedback.edit', compact('feedback'));
+    }
+
+    public function update(Request $request, Feedback $feedback) 
+    {
+        $request->validate([
+            'nama_pengusul' => 'required',
+            'kategori' => 'required',
+            'pesan' => 'required',
+            'gambar' => 'image|mimes:jpeg,png,jpg|max:2048', // Validasi jika ada gambar baru
+        ]);
+
+        // Update data feedback (dengan penanganan upload gambar baru/hapus gambar lama)
+        $feedback->nama_pengusul = $request->nama_pengusul;
+        // ... (update field lain)
+
+        if ($request->hasFile('gambar')) {
+            // Hapus gambar lama jika ada
+            if ($feedback->gambar) {
+                \Storage::delete('public/' . $feedback->gambar);
+            }
+
+            $imagePath = $request->file('gambar')->store('feedback_images', 'public');
+            $feedback->gambar = $imagePath;
+        }
+
+        $feedback->save();
+
+        return redirect()->route('feedback.index')->with('success', 'Feedback berhasil diupdate!');
+    }
+
+    public function destroy(Feedback $feedback) 
+    {
+        // Hapus gambar dari storage jika ada
+        if ($feedback->gambar) {
+            \Storage::delete('public/' . $feedback->gambar);
+        }
+
+        $feedback->delete();
+
+        return redirect()->route('feedback.index')->with('success', 'Feedback berhasil dihapus!');
+    }
+
 }

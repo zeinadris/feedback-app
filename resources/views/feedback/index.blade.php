@@ -1,44 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Form Feedback</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <h1>Kirim Feedback</h1>
-        <form action="{{ route('feedback.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="mb-3">
-                <label for="nama_pengusul" class="form-label">Nama Pengusul:</label>
-                <input type="text" class="form-control" id="nama_pengusul" name="nama_pengusul" required>
-            </div>
-            <div class="mb-3">
-                <label for="kategori" class="form-label">Kategori:</label>
-                <select class="form-select" id="kategori" name="kategori" required>
-                    <option value="sarana_prasarana">Sarana Prasarana</option>
-                    <option value="pelayanan_publik">Pelayanan Publik</option>
-                    <option value="lainnya">Lainnya</option>
-                </select>
-            </div>
-            <div class="mb-3">
-              <label for="pesan" class="form-label">Pesan:</label>
-              <textarea class="form-control" id="pesan" name="pesan" rows="3" required></textarea>
-            </div>
-            <div class="mb-3">
-              <label for="lokasi" class="form-label">Lokasi:</label>
-              <input type="text" class="form-control" id="lokasi" name="lokasi">
-            </div>
-            <div class="mb-3">
-                <label for="gambar" class="form-label">Gambar:</label>
-                <input type="file" class="form-control" id="gambar" name="gambar">
-            </div>
-            <div class="mb-3">
-              <label for="biaya" class="form-label">Estimasi Biaya (opsional):</label>
-              <input type="number" class="form-control" id="biaya" name="biaya" step="0.01">
-            </div>
-            <button type="submit" class="btn btn-primary">Kirim</button>
-        </form>
-    </div>
-</body>
-</html>
+@extends('layouts.app')
+
+@section('content')
+    <h1>Daftar Feedback Masyarakat</h1>
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <a href="{{ route('feedback.create') }}" class="btn btn-primary mb-3">Tambah Feedback</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama Pengusul</th>
+                <th>Kategori</th>
+                <th>Pesan</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($feedbacks as $feedback)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $feedback->nama_pengusul }}</td>
+                    <td>{{ $feedback->kategori }}</td>
+                    <td>{{ Str::limit($feedback->pesan, 50) }}</td> 
+                    <td>{{ $feedback->status }}</td>
+                    <td>
+                        <a href="{{ route('feedback.show', $feedback->id) }}" class="btn btn-info btn-sm">Detail</a>
+                        <a href="{{ route('feedback.edit', $feedback->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <form action="{{ route('feedback.destroy', $feedback->id) }}" method="POST" style="display: inline-block;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Anda yakin ingin menghapus feedback ini?')">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@endsection

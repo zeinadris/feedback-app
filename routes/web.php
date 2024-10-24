@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FeedbackController;
-
+use App\Models\Feedback;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +18,12 @@ use App\Http\Controllers\FeedbackController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/admin', function () {
+    $feedbacks = Feedback::all(); // Ambil semua data feedback
+    return view('admin', compact('feedbacks')); // Pass data ke view
+});
+//->middleware(['auth', 'admin']);
 
 Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
 Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('feedback.create');

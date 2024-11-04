@@ -22,7 +22,7 @@ Route::get('/', function () {
 Route::get('/admin', function () {
     $feedbacks = Feedback::all(); // Ambil semua data feedback
     return view('admin', compact('feedbacks')); // Pass data ke view
-});
+})->name('admin');
 //->middleware(['auth', 'admin']);
 
 Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
